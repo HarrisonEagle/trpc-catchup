@@ -27,6 +27,7 @@ export const postRouter = router({
       z.object({
         limit: z.number().min(1).max(100).nullish(),
         cursor: z.string().nullish(),
+        user_id: z.string().nullish(),
       }),
     )
     .query(async ({ input }) => {
@@ -37,22 +38,25 @@ export const postRouter = router({
        */
 
       const limit = input.limit ?? 50;
-      const { cursor } = input;
+      const { cursor, user_id } = input;
 
-      const items = await prisma.post.findMany({
-        select: defaultPostSelect,
-        // get an extra item at the end which we'll use as next cursor
-        take: limit + 1,
-        where: {},
-        cursor: cursor
-          ? {
-              id: cursor,
-            }
-          : undefined,
-        orderBy: {
-          createdAt: 'desc',
-        },
-      });
+      const items =
+        user_id === '123'
+          ? await prisma.post.findMany({
+              select: defaultPostSelect,
+              // get an extra item at the end which we'll use as next cursor
+              take: limit + 1,
+              where: {},
+              cursor: cursor
+                ? {
+                    id: cursor,
+                  }
+                : undefined,
+              orderBy: {
+                createdAt: 'desc',
+              },
+            })
+          : [];
       let nextCursor: typeof cursor | undefined = undefined;
       if (items.length > limit) {
         // Remove the last item and use it as next cursor

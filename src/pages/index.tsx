@@ -2,14 +2,17 @@ import { trpc } from '../utils/trpc';
 import type { NextPageWithLayout } from './_app';
 import type { inferProcedureInput } from '@trpc/server';
 import Link from 'next/link';
-import { Fragment } from 'react';
+import { Fragment, useContext } from 'react';
+import { UserContext } from '~/components/DefaultLayout';
 import type { AppRouter } from '~/server/routers/_app';
 
 const IndexPage: NextPageWithLayout = () => {
+  const user_id = useContext(UserContext);
   const utils = trpc.useUtils();
   const postsQuery = trpc.post.list.useInfiniteQuery(
     {
       limit: 5,
+      user_id,
     },
     {
       getNextPageParam(lastPage) {

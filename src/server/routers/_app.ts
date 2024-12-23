@@ -6,6 +6,7 @@ import { postRouter } from './post';
 
 export const appRouter = router({
   healthcheck: publicProcedure.query(() => 'yay!'),
+  user_id: publicProcedure.query(() => { return { user_id: '123' } }),
 
   post: postRouter,
 });
